@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="accounts-flow" doc:id="75ee7ecb-0690-4c04-b4e2-8e3b07bdf8a1" >
+		<flow-ref doc:name="Savings Account Flow" doc:id="e5d6d811-aaad-41fa-9d08-0e0365c48996" name="savings-account-request-flow" target="savingsAccountInfo"/>
+		<choice doc:name="Copy_of_Is High Savings Balance?" doc:id="ef4ec18b-26ec-4cdd-86ba-095b94c296d0">
+			<when expression="#[(vars.savingsAccountInfo.balance.balance.amount as Number) &gt; 50000]">
+				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="e8db0653-4f1d-4226-bb3a-d805294497aa" message="#['Balance Greater than 50000:' ++ vars.savingsAccountInfo.balance.balance.amount]" />
+				<set-variable value="#[%dw 2.0&#10;output application/java &#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'SAVINGS',&#10;	Balance: vars.savingsAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="ee9b5da5-9bcf-4c40-a85b-772b3e693b73" variableName="openTelemetryTags" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="df520e5f-f1a0-4310-af91-d849f071bfdb" message="#['Log Normal Balance']" />
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="Checking Account Flow" doc:id="4db1ef86-498f-45f8-a401-fa03e64421b9" name="checking-account-request-flow" target="checkingAccountInfo"/>
+		<choice doc:name="Copy_of_Is High Checking Balance?" doc:id="b4eab42c-b8e8-4428-bdbc-d8cd7fba036a">
+			<when expression="#[(vars.checkingAccountInfo.balance.balance.amount as Number) &gt; 50000]">
+				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="4e69ac4b-7a8c-4fae-8137-be50d37849eb" message="#['Balance Greater than 50000:' ++ vars.checkingAccountInfo.balance.balance.amount]" />
+				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'CHECKING',&#10;	Balance: vars.checkingAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;	&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="59066c5d-6bcd-466b-85b7-4b21a5d4fc95" variableName="openTelemetryTags" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="0d2ed7b3-c3e3-48d5-a5e5-359054b2c7b7" message="#['Log Normal Balance']" />
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="CreditCard Account Flow" doc:id="85e94523-d3c3-4d62-bd80-ffb97996c006" name="creditcard-account-request-flow" target="creditcardAccountInfo" />
+		<choice doc:name="Copy_of_Is High CreditCard  Balance?" doc:id="6c57cbf7-de48-40e2-9189-164d37966088" >
+			<when expression="#[(vars.creditcardAccountInfo.balance.balance.amount as Number) &gt; 50000]" >
+				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="2ab0b694-0c41-425e-8eab-d41ef48ebe7c" message="#['Balance Greater than 50000:' ++ vars.savingsAccountInfo.balance.balance.amount]" />
+				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	Account_Id: vars.accountId,&#10;	Account_Type: 'CREDITCARD',&#10;	Balance: vars.creditcardAccountInfo.balance.balance.amount,&#10;		HighBalance: true&#10;	&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="dbb1fa45-019e-4ae7-8f37-70db5c178c61" variableName="openTelemetryTags" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="f4c692ee-37be-4557-ac8a-dc3511205558" message="#['Log Normal Balance']" />
+			</otherwise>
+		</choice>
+		<choice doc:name="Copy_of_Is Fraud  Transaction?" doc:id="155803d1-25b5-462d-a101-e704a3aa32fd" >
+			<when expression="#[!isEmpty(vars.creditcardAccountInfo.pendingTransaction filter(trans,index) -&gt; (trans.isFraud == true))]" >
+				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	'AccountId': vars.accountId,&#10;	'AccountType': 'CREDITCARD',&#10;	'FraudDetected': true&#10;}]" doc:name="Set Telemetry Variable" doc:id="6ce826fe-20b5-4f31-97f6-803501b1a051" variableName="openTelemetryTags" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Copy_of_Copy_of_Log Normal Balance" doc:id="30a212b8-b4b2-4094-87b6-c1ca2c583e9e" message="#['Log Normal Balance']" />
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="Aggregate Flow" doc:id="b2f8ccca-ba93-49e0-a880-b1159cf66f9b" name="account-aggregator-flow" />
+	</flow>
+	<flow name="account-aggregator-flow" doc:id="2129749f-5911-405c-b132-5fe51f1d0349" >
+		<ee:transform doc:name="Aaggregate Account Info" doc:id="458d64f3-b275-4081-bfc4-2a497c57258e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	'savings': vars.savingsAccountInfo,
+	'checking': vars.checkingAccountInfo,
+	'creditcard': vars.creditcardAccountInfo
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="savings-account-request-flow" doc:id="3e7e44b3-933c-4e86-b107-d5a616fad252" >
+		<http:request method="GET" doc:name="Savings HTTP Request" doc:id="5f2786bb-e035-4bc6-a976-3fe7e68e4da9" config-ref="Savings_HTTP_Request_configuration" target="savingsAccountInfo" url="${savingsSapi.url}">
+			<http:headers ><![CDATA[#[output application/java
+---
+vars.openTelemetryTrace]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	accountId : vars.accountId
+}]]]></http:uri-params>
+		</http:request>
+		<set-payload value="#[vars.savingsAccountInfo]" doc:name="Set Payload" doc:id="0980f9ca-4990-4367-9f3b-5091f6d0d487" />
+	</flow>
+	<flow name="checking-account-request-flow" doc:id="2f4b1a91-93f9-445b-bb13-e240db47bf56" >
+		<http:request method="GET" doc:name="Checking HTTP Request" doc:id="d05861fc-9cb4-42f8-9cdb-2378bac20f65" config-ref="Checking_HTTP_Request_configuration" target="checkingAccountInfo" url="${checkingSapi.url}">
+			<http:headers ><![CDATA[#[output application/java
+---
+vars.openTelemetryTrace]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	accountId : vars.accountId
+}]]]></http:uri-params>
+		</http:request>
+		<set-payload value="#[vars.checkingAccountInfo]" doc:name="Set Payload" doc:id="5d777936-9211-47b1-abaa-abf9fa3231aa" />
+	</flow>
+	<flow name="creditcard-account-request-flow" doc:id="98213c4a-4426-4a4a-99cc-daf3d4d72878" >
+		<http:request method="GET" doc:name="Credit Card Account Retrieval" doc:id="ac20d7ee-bcf1-47df-8b39-e0d2068e4225" config-ref="Creditcard_HTTP_Request_configuration" target="creditcardAccountInfo" url="${creditcardSapi.url}">
+			<http:headers ><![CDATA[#[output application/java
+---
+vars.openTelemetryTrace]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	accountId : vars.accountId
+}]]]></http:uri-params>
+		</http:request>
+		<set-payload value="#[vars.creditcardAccountInfo]" doc:name="Set Payload" doc:id="1b84547f-a3a2-4984-bcea-9d7bee14dc1d" />
+	</flow>
+</mule>

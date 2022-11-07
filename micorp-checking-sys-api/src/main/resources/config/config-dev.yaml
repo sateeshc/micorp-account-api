@@ -1,0 +1,4 @@
+http:
+  port: "8082"
+otel:
+  url: http://localhost:4317

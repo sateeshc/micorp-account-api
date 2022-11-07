@@ -1,0 +1,21 @@
+http:
+  port: "8084"
+  
+savingsSapi:
+  host: localhost
+  port: "8081"
+  url:
+    http://localhost:8081/api/accounts/{accountId}
+checkingSapi:
+  host: localhost
+  port: "8082"
+  url:
+    http://localhost:8082/api/accounts/{accountId}
+creditcardSapi:
+  host: localhost
+  port: "8083"
+  url:
+    http://localhost:8083/api/accounts/{accountId}
+    
+otel:
+  url: http://localhost:4317

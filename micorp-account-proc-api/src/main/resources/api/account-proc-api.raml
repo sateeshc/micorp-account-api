@@ -1,0 +1,23 @@
+#%RAML 1.0
+title: Account Process API 
+version: v2
+baseUri: http://localhost:8082/api/
+mediaType: application/json
+protocols: [HTTP]
+
+
+
+
+/accounts/{accountId}:
+  uriParameters:
+    accountId:
+      example: ACC002
+  get:
+    description: Get Details
+    displayName: Retrieve accounts
+    responses:
+      200:
+        body:
+          application/json:
+  
+            

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_2f4b1a91_93f9_445b_bb13_e240db47bf56_Output_Variables_checkingAccountInfo = Any
+

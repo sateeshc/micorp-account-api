@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_98213c4a_4426_4a4a_99cc_daf3d4d72878_Output_Variables_creditcardAccountInfo = Any
+

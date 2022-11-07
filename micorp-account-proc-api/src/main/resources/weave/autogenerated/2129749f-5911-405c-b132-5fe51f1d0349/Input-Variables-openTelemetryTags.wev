@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_2129749f_5911_405c_b132_5fe51f1d0349_Input_Variables_openTelemetryTags = {|
+  "Account Id": Null, 
+  "Account Type": String, 
+  Balance: Any
+|}
+

@@ -7,41 +7,41 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="accounts-flow" doc:id="75ee7ecb-0690-4c04-b4e2-8e3b07bdf8a1" >
 		<flow-ref doc:name="Savings Account Flow" doc:id="e5d6d811-aaad-41fa-9d08-0e0365c48996" name="savings-account-request-flow" target="savingsAccountInfo"/>
-		<choice doc:name="Copy_of_Is High Savings Balance?" doc:id="ef4ec18b-26ec-4cdd-86ba-095b94c296d0">
+		<choice doc:name="Is High Savings Balance?" doc:id="ef4ec18b-26ec-4cdd-86ba-095b94c296d0">
 			<when expression="#[(vars.savingsAccountInfo.balance.balance.amount as Number) &gt; 50000]">
 				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="e8db0653-4f1d-4226-bb3a-d805294497aa" message="#['Balance Greater than 50000:' ++ vars.savingsAccountInfo.balance.balance.amount]" />
-				<set-variable value="#[%dw 2.0&#10;output application/java &#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'SAVINGS',&#10;	Balance: vars.savingsAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="ee9b5da5-9bcf-4c40-a85b-772b3e693b73" variableName="openTelemetryTags" />
+				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'SAVINGS',&#10;	Balance: vars.savingsAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;}]" doc:name="Set Telemetry Variable" doc:id="ee9b5da5-9bcf-4c40-a85b-772b3e693b73" variableName="openTelemetryTags" />
 			</when>
 			<otherwise>
-				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="df520e5f-f1a0-4310-af91-d849f071bfdb" message="#['Log Normal Balance']" />
+				<logger level="INFO" doc:name="Log Normal Balance" doc:id="df520e5f-f1a0-4310-af91-d849f071bfdb" message="#['Log Normal Balance']" />
 			</otherwise>
 		</choice>
 		<flow-ref doc:name="Checking Account Flow" doc:id="4db1ef86-498f-45f8-a401-fa03e64421b9" name="checking-account-request-flow" target="checkingAccountInfo"/>
-		<choice doc:name="Copy_of_Is High Checking Balance?" doc:id="b4eab42c-b8e8-4428-bdbc-d8cd7fba036a">
+		<choice doc:name="Is High Checking Balance?" doc:id="b4eab42c-b8e8-4428-bdbc-d8cd7fba036a">
 			<when expression="#[(vars.checkingAccountInfo.balance.balance.amount as Number) &gt; 50000]">
-				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="4e69ac4b-7a8c-4fae-8137-be50d37849eb" message="#['Balance Greater than 50000:' ++ vars.checkingAccountInfo.balance.balance.amount]" />
-				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'CHECKING',&#10;	Balance: vars.checkingAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;	&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="59066c5d-6bcd-466b-85b7-4b21a5d4fc95" variableName="openTelemetryTags" />
+				<logger level="INFO" doc:name="Log High Balance" doc:id="4e69ac4b-7a8c-4fae-8137-be50d37849eb" message="#['Balance Greater than 50000:' ++ vars.checkingAccountInfo.balance.balance.amount]" />
+				<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;	AccountId: vars.accountId,&#10;	AccountType: 'CHECKING',&#10;	Balance: vars.checkingAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;	&#10;}]" doc:name="Set Telemetry Variable" doc:id="59066c5d-6bcd-466b-85b7-4b21a5d4fc95" variableName="openTelemetryTags" />
 			</when>
 			<otherwise>
-				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="0d2ed7b3-c3e3-48d5-a5e5-359054b2c7b7" message="#['Log Normal Balance']" />
+				<logger level="INFO" doc:name="Log Normal Balance" doc:id="0d2ed7b3-c3e3-48d5-a5e5-359054b2c7b7" message="#['Log Normal Balance']" />
 			</otherwise>
 		</choice>
 		<flow-ref doc:name="CreditCard Account Flow" doc:id="85e94523-d3c3-4d62-bd80-ffb97996c006" name="creditcard-account-request-flow" target="creditcardAccountInfo" />
-		<choice doc:name="Copy_of_Is High CreditCard  Balance?" doc:id="6c57cbf7-de48-40e2-9189-164d37966088" >
+		<choice doc:name="Is High CreditCard  Balance?" doc:id="6c57cbf7-de48-40e2-9189-164d37966088" >
 			<when expression="#[(vars.creditcardAccountInfo.balance.balance.amount as Number) &gt; 50000]" >
-				<logger level="INFO" doc:name="Copy_of_Log High Balance" doc:id="2ab0b694-0c41-425e-8eab-d41ef48ebe7c" message="#['Balance Greater than 50000:' ++ vars.savingsAccountInfo.balance.balance.amount]" />
-				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	Account_Id: vars.accountId,&#10;	Account_Type: 'CREDITCARD',&#10;	Balance: vars.creditcardAccountInfo.balance.balance.amount,&#10;		HighBalance: true&#10;	&#10;}]" doc:name="Copy_of_Set Telemetry Variable" doc:id="dbb1fa45-019e-4ae7-8f37-70db5c178c61" variableName="openTelemetryTags" />
+				<logger level="INFO" doc:name="Log High Balance" doc:id="2ab0b694-0c41-425e-8eab-d41ef48ebe7c" message="#['Balance Greater than 50000:' ++ vars.savingsAccountInfo.balance.balance.amount]" />
+				<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;	Account_Id: vars.accountId,&#10;	Account_Type: 'CREDITCARD',&#10;	Balance: vars.creditcardAccountInfo.balance.balance.amount,&#10;	HighBalance: true&#10;	&#10;}]" doc:name="Set Telemetry Variable" doc:id="dbb1fa45-019e-4ae7-8f37-70db5c178c61" variableName="openTelemetryTags" />
 			</when>
 			<otherwise >
-				<logger level="INFO" doc:name="Copy_of_Log Normal Balance" doc:id="f4c692ee-37be-4557-ac8a-dc3511205558" message="#['Log Normal Balance']" />
+				<logger level="INFO" doc:name="Log Normal Balance" doc:id="f4c692ee-37be-4557-ac8a-dc3511205558" message="#['Log Normal Balance']" />
 			</otherwise>
 		</choice>
-		<choice doc:name="Copy_of_Is Fraud  Transaction?" doc:id="155803d1-25b5-462d-a101-e704a3aa32fd" >
+		<choice doc:name="Is Fraud  Transaction?" doc:id="155803d1-25b5-462d-a101-e704a3aa32fd" >
 			<when expression="#[!isEmpty(vars.creditcardAccountInfo.pendingTransaction filter(trans,index) -&gt; (trans.isFraud == true))]" >
-				<set-variable value="#[%dw 2.0&#10;output application/json &#10;---&#10;{&#10;	'AccountId': vars.accountId,&#10;	'AccountType': 'CREDITCARD',&#10;	'FraudDetected': true&#10;}]" doc:name="Set Telemetry Variable" doc:id="6ce826fe-20b5-4f31-97f6-803501b1a051" variableName="openTelemetryTags" />
+				<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;{&#10;	'AccountId': vars.accountId,&#10;	'AccountType': 'CREDITCARD',&#10;	'FraudDetected': true&#10;}]" doc:name="Set Telemetry Variable" doc:id="6ce826fe-20b5-4f31-97f6-803501b1a051" variableName="openTelemetryTags" />
 			</when>
 			<otherwise >
-				<logger level="INFO" doc:name="Copy_of_Copy_of_Log Normal Balance" doc:id="30a212b8-b4b2-4094-87b6-c1ca2c583e9e" message="#['Log Normal Balance']" />
+				<logger level="INFO" doc:name="Log Normal Balance" doc:id="30a212b8-b4b2-4094-87b6-c1ca2c583e9e" message="#['Log Normal Balance']" />
 			</otherwise>
 		</choice>
 		<flow-ref doc:name="Aggregate Flow" doc:id="b2f8ccca-ba93-49e0-a880-b1159cf66f9b" name="account-aggregator-flow" />
@@ -53,9 +53,10 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 output application/json
 ---
 {
-	'savings': vars.savingsAccountInfo,
-	'checking': vars.checkingAccountInfo,
-	'creditcard': vars.creditcardAccountInfo
+	accountId: vars.accountId,
+	savings: vars.savingsAccountInfo,
+	checking: vars.checkingAccountInfo,
+	creditcard: vars.creditcardAccountInfo
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

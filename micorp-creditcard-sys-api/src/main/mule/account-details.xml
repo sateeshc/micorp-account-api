@@ -135,7 +135,7 @@ var transactions= readUrl("classpath://data/transactions.csv", "application/csv"
 
 
 fun isFraud() = 
-if(random()  > 0.95)
+if(random()  > 0.99)
 	true
 else false
 ---

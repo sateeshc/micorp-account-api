@@ -2,7 +2,7 @@
     <rule name="FlowNameShouldMatchConvention"
       language="xml"
       message="Flows names should match a naming convention"
-      class="net.sourceforge.pmd.lang.rule.XPathRule" >
+      class="net.sourceforge.pmd.lang.xml.rule.DomXPathRule" >
         <description>
         Flow names should match a naming convention
     </description>

@@ -11,8 +11,7 @@
             <property name="xpath">
                 <value>
                     <![CDATA[
-count(//mule:mule/mule:flow)=0 or matches(//mule:mule/mule:flow/@name, '^[a-z:\\{}]+(-[a-z]+)*$')
-]]>
+for $flowName in //mule/flow/@name   return  (matches($flowName,  '^[a-z:\\{}]+(-[a-z]+)*$'))]]>
                 </value>
             </property>
         </properties>
